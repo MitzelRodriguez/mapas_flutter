@@ -34,7 +34,11 @@ class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
     MiUbicacionEvent event,
   ) async* {
     if (event is OnUbicacionCambio) {
-      yield state.copyWith(existeUbicacion: true, ubicacion: event.ubicacion);
+      print(event);
+      yield state.copyWith(
+        existeUbicacion: true,
+        ubicacion: event.ubicacion,
+      );
     }
   }
 }

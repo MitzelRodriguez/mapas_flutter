@@ -33,7 +33,10 @@ class _MapaPageState extends State<MapaPage> {
           builder: (_, state) => crearMapa(state)),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [BtnUbicacion()],
+        children: [
+          BtnUbicacion(),
+          BtnMiRuta(),
+        ],
       ),
     );
   }
@@ -43,6 +46,8 @@ class _MapaPageState extends State<MapaPage> {
 
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
 
+    mapaBloc.add(OnLocationUpdate(state.ubicacion));
+
     final cameraPosition = new CameraPosition(
       target: state.ubicacion,
       zoom: 15,
@@ -50,10 +55,11 @@ class _MapaPageState extends State<MapaPage> {
 
     return GoogleMap(
       initialCameraPosition: cameraPosition,
-      //myLocationEnabled: true,
-      //myLocationButtonEnabled: true,
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
       onMapCreated: mapaBloc.initMapa,
+      polylines: mapaBloc.state.polylines.values.toSet(),
     );
   }
 }
