@@ -20,7 +20,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   //Polylines
   Polyline _miRuta = new Polyline(
     polylineId: PolylineId('mi_ruta'),
-    color: Colors.black87,
+    color: Colors.transparent,
     width: 4,
   );
 
@@ -30,7 +30,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       this._mapController.setMapStyle(
           jsonEncode(uberMapTheme)); //manejar como string json de themaMap
 
-      add(onMapaListo());
+      add(OnMapaListo());
     }
   }
 
@@ -43,16 +43,25 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
   Stream<MapaState> mapEventToState(
     MapaEvent event,
   ) async* {
-    if (event is onMapaListo) {
+    if (event is OnMapaListo) {
       yield state.copyWith(mapaListo: true);
     } else if (event is OnLocationUpdate) {
       yield* this._onLocationUpdate(event);
     } else if (event is OnMarcarRecorrido) {
       yield* this._onMarcarRecorrido(event);
+    } else if (event is OnSeguirUbicacion) {
+      yield* this._onSeguirUbicacion(event);
+    } else if (event is OnMovioMapa) {
+      yield state.copyWith(ubicacionCentral: event.centroMapa);
+      print(event.centroMapa);
     }
   }
 
   Stream<MapaState> _onLocationUpdate(OnLocationUpdate event) async* {
+    if (state.seguirUbicacion) {
+      this.moverCamera(event.ubicacion);
+    }
+
     final points = [...this._miRuta.points, event.ubicacion];
     this._miRuta = this._miRuta.copyWith(pointsParam: points);
 
@@ -60,6 +69,14 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     currentPolylines['mi_ruta'] = this._miRuta;
 
     yield state.copyWith(polylines: currentPolylines);
+  }
+
+  Stream<MapaState> _onSeguirUbicacion(OnSeguirUbicacion event) async* {
+    if (!state.seguirUbicacion) {
+      this.moverCamera(this._miRuta.points[this._miRuta.points.length - 1]);
+    }
+    //emitir un nuevo estado de state.copyWith
+    yield state.copyWith(seguirUbicacion: !state.seguirUbicacion);
   }
 
   Stream<MapaState> _onMarcarRecorrido(OnMarcarRecorrido event) async* {

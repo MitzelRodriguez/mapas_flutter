@@ -33,7 +33,7 @@ dependencies:
   flutter_bloc: ^6.1.0
   dio: ^3.0.10
   animate_do: ^1.7.2
-  google_maps_flutter: ^1.0.6
+  google_maps_flutter: ^0.5.28+1
 
 dev_dependencies:
   flutter_test:

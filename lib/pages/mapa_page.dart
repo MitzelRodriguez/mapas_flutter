@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:mapa_app/bloc/mapa/mapa_bloc.dart';
 import 'package:mapa_app/bloc/mi_ubicacion/mi_ubicacion_bloc.dart';
+
 import 'package:mapa_app/widgets/widgets.dart';
 
 class MapaPage extends StatefulWidget {
@@ -29,12 +30,25 @@ class _MapaPageState extends State<MapaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-          builder: (_, state) => crearMapa(state)),
+      body: Stack(
+        children: [
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+              builder: (_, state) => crearMapa(state)),
+
+          //TODO: hacer el toggle uando estoy manualmente
+
+          // Positioned(
+          //   child: SearchBar(),
+          //   top: 20,
+          // ),
+          MarcadorManual(),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           BtnUbicacion(),
+          BtnSeguirUbicacion(),
           BtnMiRuta(),
         ],
       ),
@@ -60,6 +74,11 @@ class _MapaPageState extends State<MapaPage> {
       zoomControlsEnabled: false,
       onMapCreated: mapaBloc.initMapa,
       polylines: mapaBloc.state.polylines.values.toSet(),
+      onCameraMove: (cameraPosition) {
+        // cameraPosition.target = LatLng central del mapa
+        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+      },
+      //se dispara cuando se deja de mover el mapa onCameraIdle
     );
   }
 }
