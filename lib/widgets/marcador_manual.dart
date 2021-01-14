@@ -81,6 +81,8 @@ class _BuildMarcadorManual extends StatelessWidget {
   }
 
   void calcularDestino(BuildContext context) async {
+    CalculandoAlerta(context);
+
     final trafficService = new TrafficService();
 
     final mapaBloc = context.read<MapaBloc>();
