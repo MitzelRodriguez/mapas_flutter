@@ -36,7 +36,6 @@ class SearchDestination extends SearchDelegate<SearchResult> {
           leading: Icon(Icons.location_on),
           title: Text('Colocar ubicacion manualmente'),
           onTap: () {
-            //TODO: retornar algo!
             print('Something...');
             this.close(context, SearchResult(cancelo: false, manual: true));
           },

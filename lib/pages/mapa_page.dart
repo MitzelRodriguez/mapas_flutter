@@ -34,13 +34,10 @@ class _MapaPageState extends State<MapaPage> {
         children: [
           BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
               builder: (_, state) => crearMapa(state)),
-
-          //TODO: hacer el toggle uando estoy manualmente
-
-          // Positioned(
-          //   child: SearchBar(),
-          //   top: 20,
-          // ),
+          Positioned(
+            top: 20,
+            child: SearchBar(),
+          ),
           MarcadorManual(),
         ],
       ),
@@ -67,18 +64,22 @@ class _MapaPageState extends State<MapaPage> {
       zoom: 15,
     );
 
-    return GoogleMap(
-      initialCameraPosition: cameraPosition,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      onMapCreated: mapaBloc.initMapa,
-      polylines: mapaBloc.state.polylines.values.toSet(),
-      onCameraMove: (cameraPosition) {
-        // cameraPosition.target = LatLng central del mapa
-        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+    return BlocBuilder<MapaBloc, MapaState>(
+      builder: (context, _) {
+        return GoogleMap(
+          initialCameraPosition: cameraPosition,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          onMapCreated: mapaBloc.initMapa,
+          polylines: mapaBloc.state.polylines.values.toSet(),
+          onCameraMove: (cameraPosition) {
+            // cameraPosition.target = LatLng central del mapa
+            mapaBloc.add(OnMovioMapa(cameraPosition.target));
+          },
+          //se dispara cuando se deja de mover el mapa onCameraIdle
+        );
       },
-      //se dispara cuando se deja de mover el mapa onCameraIdle
     );
   }
 }
