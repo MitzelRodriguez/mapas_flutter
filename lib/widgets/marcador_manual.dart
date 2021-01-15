@@ -107,5 +107,10 @@ class _BuildMarcadorManual extends StatelessWidget {
 
     //Mandar informacion al bloc
     mapaBloc.add(OnCrearRutaInicioDestino(rutaCoords, distance, duration));
+
+    Navigator.of(context).pop();
+
+    //quitar boton confirmar destino
+    context.read<BusquedaBloc>().add(OnDesactivarMarcadorManual());
   }
 }

@@ -25,9 +25,9 @@ class SearchBar extends StatelessWidget {
         width: widthSize,
         child: GestureDetector(
           onTap: () async {
-            print('Buscando....');
+            final proximidad = context.read<MiUbicacionBloc>().state.ubicacion;
             final resultado = await showSearch(
-                context: context, delegate: SearchDestination());
+                context: context, delegate: SearchDestination(proximidad));
             this.retornoBusqueda(context, resultado);
           },
           child: Container(
@@ -58,8 +58,6 @@ class SearchBar extends StatelessWidget {
     if (result.cancelo) return;
 
     if (result.manual) {
-      // ignore: deprecated_member_use
-      //context.bloc<BusquedaBloc>().add(OnActivarMarcadorManual());
       context.read<BusquedaBloc>().add(OnActivarMarcadorManual());
       return;
     }
