@@ -9,12 +9,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_app/themes/uber_map_theme.dart';
 
 part 'mapa_event.dart';
-
 part 'mapa_state.dart';
 
 class MapaBloc extends Bloc<MapaEvent, MapaState> {
   MapaBloc() : super(MapaState());
 
+  //Controlador del mapa
   GoogleMapController _mapController;
 
   //Polylines
@@ -36,7 +36,6 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
       this._mapController = controller;
       this._mapController.setMapStyle(
           jsonEncode(uberMapTheme)); //manejar como string json de themaMap
-
       add(OnMapaListo());
     }
   }
@@ -111,8 +110,6 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
 
     yield state.copyWith(
       polylines: currentPolylines,
-
-      //TODO: Marcadores
     );
   }
 }

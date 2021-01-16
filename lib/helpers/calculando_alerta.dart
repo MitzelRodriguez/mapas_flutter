@@ -1,6 +1,6 @@
 part of 'helpers.dart';
 
-void CalculandoAlerta(BuildContext context) {
+void calculandoAlerta(BuildContext context) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(

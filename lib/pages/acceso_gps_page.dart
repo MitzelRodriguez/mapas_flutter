@@ -24,8 +24,10 @@ class _AccesoGPSPageState extends State<AccesoGPSPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (await Permission.location.isGranted) {
-      Navigator.pushReplacementNamed(context, 'loading');
+    if (state == AppLifecycleState.resumed && !popup) {
+      if (await Permission.location.isGranted) {
+        Navigator.pushReplacementNamed(context, 'loading');
+      }
     }
   }
 

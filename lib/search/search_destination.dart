@@ -9,8 +9,9 @@ class SearchDestination extends SearchDelegate<SearchResult> {
   final String searchFieldLabel;
   final TrafficService _trafficService;
   final LatLng proximidad;
+  final List<SearchResult> historial;
 
-  SearchDestination(this.proximidad)
+  SearchDestination(this.proximidad, this.historial)
       : this.searchFieldLabel = 'Buscar...',
         this._trafficService = new TrafficService();
 
@@ -23,6 +24,7 @@ class SearchDestination extends SearchDelegate<SearchResult> {
 
   @override
   Widget buildLeading(BuildContext context) {
+    print('Build Leading');
     return IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () => this.close(context, SearchResult(cancelo: true)));
@@ -31,12 +33,13 @@ class SearchDestination extends SearchDelegate<SearchResult> {
   @override
   Widget buildResults(BuildContext context) {
     //Resultados de busqueda
-
+    print('buildResults');
     return _construirResultadosSugerencias();
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    print('buildSuggestions');
     if (this.query.length == 0) {
       //Sugerencia de busqueda
       return ListView(
@@ -49,6 +52,17 @@ class SearchDestination extends SearchDelegate<SearchResult> {
               this.close(context, SearchResult(cancelo: false, manual: true));
             },
           ),
+          ...this
+              .historial
+              .map((result) => ListTile(
+                    leading: Icon(Icons.history),
+                    title: Text(result.nombreDestino),
+                    subtitle: Text(result.descripcion),
+                    onTap: () {
+                      this.close(context, result);
+                    },
+                  ))
+              .toList(),
         ],
       );
     }
@@ -56,44 +70,56 @@ class SearchDestination extends SearchDelegate<SearchResult> {
   }
 
   Widget _construirResultadosSugerencias() {
+    print('construir resultados sugerencias');
     if (this.query == 0) {
       return Container();
     }
 
-    this._trafficService.getResultadosPorQuery(this.query.trim(), proximidad);
+    this
+        ._trafficService
+        .getResultadosPorQuery(this.query.trim(), this.proximidad);
 
     //llamar servicio
     return StreamBuilder(
         stream: this._trafficService.sugerenciasStream,
         builder:
             (BuildContext context, AsyncSnapshot<SearchResponse> snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
+          print('Snapshot: $snapshot');
+          if (snapshot.hasData) {
+            final lugares = snapshot.data.features;
 
-          final lugares = snapshot.data.features;
-
-          if (lugares.length == 0) {
-            return ListTile(
-              title: Text('No hay resultados con $query'),
-            );
-          }
-
-          return ListView.separated(
-            itemCount: lugares.length,
-            separatorBuilder: (_, i) => Divider(),
-            itemBuilder: (_, i) {
-              final lugar = lugares[i];
+            if (lugares.length == 0) {
               return ListTile(
-                leading: Icon(Icons.place),
-                title: Text(lugar.textEs),
-                subtitle: Text(lugar.placeNameEs),
-                onTap: () {
-                  print(lugar);
-                },
+                title: Text('No hay resultados con $query'),
               );
-            },
-          );
+            }
+
+            return ListView.separated(
+              itemCount: lugares.length,
+              separatorBuilder: (_, i) => Divider(),
+              itemBuilder: (_, i) {
+                final lugar = lugares[i];
+                return ListTile(
+                  leading: Icon(Icons.place),
+                  title: Text(lugar.textEs),
+                  subtitle: Text(lugar.placeNameEs),
+                  onTap: () {
+                    this.close(
+                        context,
+                        SearchResult(
+                          cancelo: false,
+                          manual: false,
+                          position: LatLng(lugar.center[1], lugar.center[0]),
+                          nombreDestino: lugar.textEs,
+                          descripcion: lugar.placeNameEs,
+                        ));
+                  },
+                );
+              },
+            );
+          } else {
+            print('noHAsData');
+          }
         });
   }
 }

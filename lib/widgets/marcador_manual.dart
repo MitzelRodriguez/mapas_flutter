@@ -37,8 +37,7 @@ class _BuildMarcadorManual extends StatelessWidget {
                   color: Colors.black87,
                 ),
                 onPressed: () {
-                  context
-                      .read<BusquedaBloc>()
+                  BlocProvider.of<BusquedaBloc>(context)
                       .add(OnDesactivarMarcadorManual());
                 },
               ),
@@ -53,6 +52,7 @@ class _BuildMarcadorManual extends StatelessWidget {
               child: Icon(
                 Icons.location_on,
                 color: Colors.black87,
+                size: 50,
               ),
             ),
           ),
@@ -81,13 +81,13 @@ class _BuildMarcadorManual extends StatelessWidget {
   }
 
   void calcularDestino(BuildContext context) async {
-    CalculandoAlerta(context);
+    calculandoAlerta(context);
 
     final trafficService = new TrafficService();
 
-    final mapaBloc = context.read<MapaBloc>();
+    final mapaBloc = BlocProvider.of<MapaBloc>(context);
 
-    final inicio = context.read<MiUbicacionBloc>().state.ubicacion;
+    final inicio = BlocProvider.of<MiUbicacionBloc>(context).state.ubicacion;
     final destino = mapaBloc.state.ubicacionCentral;
 
     final trafficResponse =
@@ -111,6 +111,6 @@ class _BuildMarcadorManual extends StatelessWidget {
     Navigator.of(context).pop();
 
     //quitar boton confirmar destino
-    context.read<BusquedaBloc>().add(OnDesactivarMarcadorManual());
+    BlocProvider.of<BusquedaBloc>(context).add(OnDesactivarMarcadorManual());
   }
 }

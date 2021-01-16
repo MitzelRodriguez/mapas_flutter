@@ -6,8 +6,11 @@ class MiUbicacionState {
   final bool existeUbicacion;
   final LatLng ubicacion;
 
-  MiUbicacionState(
-      {this.siguiendo = true, this.existeUbicacion = false, this.ubicacion});
+  MiUbicacionState({
+    this.siguiendo = true,
+    this.existeUbicacion = false,
+    this.ubicacion,
+  });
 
   MiUbicacionState copyWith({
     bool siguiendo,

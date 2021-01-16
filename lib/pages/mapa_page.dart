@@ -15,15 +15,13 @@ class MapaPage extends StatefulWidget {
 class _MapaPageState extends State<MapaPage> {
   @override
   void initState() {
-    // ignore: deprecated_member_use
-    context.bloc<MiUbicacionBloc>().iniciarSeguimiento();
+    BlocProvider.of<MiUbicacionBloc>(context).iniciarSeguimiento();
     super.initState();
   }
 
   @override
   void dispose() {
-    // ignore: deprecated_member_use
-    context.bloc<MiUbicacionBloc>().cancelarSeguimiento();
+    BlocProvider.of<MiUbicacionBloc>(context).cancelarSeguimiento();
     super.dispose();
   }
 

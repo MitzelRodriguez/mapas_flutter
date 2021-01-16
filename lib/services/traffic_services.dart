@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/gestures.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 import 'package:mapa_app/helpers/debouncer.dart';
 import 'package:mapa_app/models/search_response.dart';
 import 'package:mapa_app/models/traffic_response.dart';
@@ -18,7 +17,7 @@ class TrafficService {
   }
 
   final _dio = new Dio();
-  final debouncer = Debouncer<String>(duration: Duration(milliseconds: 200));
+  final debouncer = Debouncer<String>(duration: Duration(milliseconds: 400));
   final StreamController<SearchResponse> _sugerenciasStreamController =
       new StreamController<SearchResponse>.broadcast();
 
@@ -51,7 +50,9 @@ class TrafficService {
 
   Future<SearchResponse> getResultadosPorQuery(
       String busqueda, LatLng proximidad) async {
+    print('Buscando!!');
     final url = '${this._baseUrlGeo}/mapbox.places/$busqueda.json';
+    print('url: $url');
 
     try {
       final resp = await this._dio.get(url, queryParameters: {
@@ -60,6 +61,8 @@ class TrafficService {
         'proximity': '${proximidad.longitude},${proximidad.latitude}',
         'language': 'es',
       });
+
+      print('respuesta: $resp');
 
       final searchResponse = searchResponseFromJson(resp.data);
 
@@ -70,6 +73,7 @@ class TrafficService {
   }
 
   void getSugerenciasPorQuery(String busqueda, LatLng proximidad) {
+    print('void get sugerencia ');
     debouncer.value = '';
     debouncer.onValue = (value) async {
       final resultados = await this.getResultadosPorQuery(value, proximidad);
