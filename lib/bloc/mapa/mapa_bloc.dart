@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/material.dart' show Colors, Offset;
 import 'package:meta/meta.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -108,8 +108,43 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     final currentPolylines = state.polylines;
     currentPolylines['ruta_destino'] = this._rutaDestino;
 
+    //Marcadores
+    final markerInicio = new Marker(
+      markerId: MarkerId('inicio'),
+      position: event.rutaCoordenadas[0],
+      infoWindow: InfoWindow(
+        title: 'Origen',
+        snippet: 'Punto de origen',
+      ),
+    );
+
+    double kilometros = event.distancia / 1000;
+    kilometros = ((kilometros * 100).floor().toDouble()) / 100;
+
+    final markerFinal = new Marker(
+      markerId: MarkerId('fin'),
+      position: event.rutaCoordenadas[
+          event.rutaCoordenadas.length - 1], //obtener ultima coordenada
+      infoWindow: InfoWindow(
+        title: event.nombreDestino,
+        snippet: 'Duracion: ${(event.duracion / 60).floor()} minutos' +
+            ' Distancia: ${kilometros}Km',
+      ),
+    );
+
+    final newMarkers = {...state.markers}; // copia de marcadores
+
+    //add marcador
+    newMarkers['inicio'] = markerInicio;
+    newMarkers['fin'] = markerFinal;
+
+    Future.delayed(Duration(milliseconds: 300)).then(
+      (value) => _mapController.showMarkerInfoWindow(MarkerId('fin')),
+    );
+
     yield state.copyWith(
       polylines: currentPolylines,
+      markers: newMarkers,
     );
   }
 }

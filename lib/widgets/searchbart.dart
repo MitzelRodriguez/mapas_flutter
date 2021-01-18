@@ -82,6 +82,7 @@ class SearchBar extends StatelessWidget {
     final geometry = drivingResponse.routes[0].geometry;
     final duration = drivingResponse.routes[0].duration;
     final distancia = drivingResponse.routes[0].distance;
+    final nombreDestino = result.nombreDestino;
 
     //Decodificar los puntos
     final points = Poly.Polyline.Decode(encodedString: geometry, precision: 6);
@@ -92,8 +93,12 @@ class SearchBar extends StatelessWidget {
         .toList();
 
     //Llamar evento para crear la ruta de inicio y fin
-    mapaBloc
-        .add(OnCrearRutaInicioDestino(rutaCoordenadas, distancia, duration));
+    mapaBloc.add(OnCrearRutaInicioDestino(
+      rutaCoordenadas,
+      distancia,
+      duration,
+      nombreDestino,
+    ));
 
     Navigator.of(context).pop();
 
