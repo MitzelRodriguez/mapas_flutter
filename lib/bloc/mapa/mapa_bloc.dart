@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart' show Colors, Offset;
+import 'package:flutter/material.dart' show Colors;
+import 'package:mapa_app/helpers/helpers.dart';
 import 'package:meta/meta.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -109,8 +110,14 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
     currentPolylines['ruta_destino'] = this._rutaDestino;
 
     //Marcadores
+
+    //Icono de marcador personalizado
+    final icon = await getAssetImageMarker();
+    final iconInicio = await getNetworkImageMarker();
+
     final markerInicio = new Marker(
       markerId: MarkerId('inicio'),
+      icon: iconInicio,
       position: event.rutaCoordenadas[0],
       infoWindow: InfoWindow(
         title: 'Origen',
@@ -123,6 +130,7 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
 
     final markerFinal = new Marker(
       markerId: MarkerId('fin'),
+      icon: icon,
       position: event.rutaCoordenadas[
           event.rutaCoordenadas.length - 1], //obtener ultima coordenada
       infoWindow: InfoWindow(
